@@ -1,0 +1,52 @@
+name: Compilar o mod
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Preparar o Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar
+        run: ./gradlew build --no-daemon
+
+      - name: Guardar o arquivo do mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: compelium-cpm-plus
+          path: build/libs/*.jar
+
+      - name: Publicar nos lançamentos
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '\r')
+          TAG="v${VERSION}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" build/libs/*.jar --clobber
+          else
+            gh release create "$TAG" build/libs/*.jar \
+              --target "$GITHUB_SHA" \
+              --prerelease \
+              --title "Compelium's CPM+ ${VERSION}" \
+              --notes-file docs/notas-da-versao.md
+          fi

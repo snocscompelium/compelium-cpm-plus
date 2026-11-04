@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_name
+}
+
+// Compile-only stand-ins for the Mixin annotations. Fabric Loader ships the real ones,
+// so these are never packaged into the mod.
+sourceSets {
+    stubs {
+        java {
+            srcDir 'stubs'
+        }
+    }
+}
+
+repositories {
+    maven {
+        name = 'tom5454'
+        url = 'https://raw.githubusercontent.com/tom5454/maven/main'
+        content {
+            includeGroup 'com.tom5454.cpm'
+        }
+    }
+}
+
+dependencies {
+    // The CPM API jar holds CPM's shared code, which is the same on every Minecraft version.
+    // -PcpmApiJar=/path/to/CustomPlayerModels-API.jar builds against a local copy instead.
+    if (project.hasProperty('cpmApiJar')) {
+        compileOnly files(project.property('cpmApiJar'))
+    } else {
+        compileOnly "com.tom5454.cpm:CustomPlayerModels-API:${project.cpm_api_version}"
+    }
+    compileOnly sourceSets.stubs.output
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    // Java 8 bytecode, like the official CPM add-ons, so one file runs on every supported Minecraft version
+    options.release = 8
+    options.compilerArgs << '-Xlint:-options'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+jar {
+    from('LICENSE') {
+        rename { "${it}_${project.archives_name}" }
+    }
+}
