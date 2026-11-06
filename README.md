@@ -1,11 +1,12 @@
 # Compelium's CPM+
 
-Expansão para o [Customizable Player Models](https://github.com/tom5454/CustomPlayerModels) (CPM) com dois recursos:
+Expansão para o [Customizable Player Models](https://github.com/tom5454/CustomPlayerModels) (CPM) com três recursos:
 
 - **Gatilhos de movimento:** capas, cabelos, rabos, orelhas e acessórios que balançam ao cair, correr, virar, pular e pousar.
 - **Partículas presas ao modelo:** fogo na ponta de um cajado, fumaça saindo de uma chaminé nas costas, brilho nas mãos.
+- **Dobras do Emotecraft:** cotovelos, joelhos e cintura que dobram nos emotes, como na skin normal.
 
-O mod é opcional e roda só no cliente. Quem tem o mod vê os efeitos; quem não tem vê o modelo CPM normal, parado na pose de repouso e sem partículas. O servidor não precisa de nada.
+O mod é opcional e roda só no cliente. Quem tem o mod vê os efeitos; quem não tem vê o modelo CPM normal, parado na pose de repouso, sem partículas e sem dobras. O servidor não precisa de nada.
 
 ## Instalação
 
@@ -15,7 +16,7 @@ Para Minecraft Java 1.21.4 com Fabric:
 2. [Customizable Player Models](https://modrinth.com/plugin/custom-player-models) para Fabric 1.21.4.
 3. O arquivo `compelium-cpm-plus-<versão>.jar`, da página de [lançamentos](https://github.com/snocscompelium/compelium-cpm-plus/releases), na pasta `mods`.
 
-Os gatilhos de movimento funcionam em qualquer versão a partir da 1.21.4. As partículas foram feitas para a 1.21.4; nas outras versões elas ficam desligadas, sem erro.
+Por enquanto o mod é testado só na 1.21.4. Os gatilhos de movimento e as dobras usam só o código do CPM, então devem funcionar nas versões mais novas também. As partículas foram feitas para a 1.21.4; nas outras versões elas ficam desligadas, sem erro.
 
 ## Gatilhos de movimento
 
@@ -32,7 +33,7 @@ Depois é só animar:
 
 Para testar no editor, mexa no controle deslizante de teste da animação. A física de verdade só roda no jogo.
 
-**Interpolação:** use **Linear (única)**, que o assistente já escolhe. Com as interpolações em loop e com a Polinomial (única), o CPM não espalha os quadros por igual, e 50% cai entre o quadro do meio e o último. O botão **Corrigir alinhamento de todas**, no mesmo assistente, ajusta de uma vez todas as animações `cplus_` do modelo.
+**Interpolação:** use **Trigonométrico Único**, que o assistente já escolhe. Ele deixa o quadro do meio exatamente em 50% e suaviza a chegada em cada quadro, então a peça fica firme na pose de repouso. Com as interpolações em loop e com a Polinomial, o quadro de repouso sai do meio. O botão **Corrigir alinhamento de todas**, no mesmo assistente, passa de uma vez todas as animações `cplus_` do modelo para Trigonométrico Único.
 
 ### Escrevendo o nome à mão
 
@@ -127,6 +128,65 @@ Exemplos:
 
 - As partículas seguem a configuração de partículas do Minecraft (Todas, Reduzidas, Mínimas).
 - Em primeira pessoa você não vê as partículas do seu próprio modelo; os outros jogadores com o mod veem.
+
+## Dobras do Emotecraft
+
+Com o [Emotecraft](https://modrinth.com/mod/emotecraft), os emotes dobram cotovelos, joelhos e cintura no modelo do CPM. Você divide o membro em duas peças, e o mod gira a peça de baixo (o antebraço, a canela ou o peito) pelo ângulo exato da dobra do emote.
+
+Precisa do Emotecraft; do Minecraft 1.21.7 em diante, também da Player Animation Library. As animações do próprio modelo continuam funcionando, e a dobra soma por cima delas.
+
+Se você usava o mod **CPM Emote Bends**, pode tirar ele da pasta `mods`: o CPM+ faz a mesma coisa, com os mesmos nomes, e os modelos já marcados continuam funcionando. Se os dois estiverem instalados, o CPM+ deixa as dobras com o mod antigo, para nada dobrar duas vezes.
+
+### Jeito fácil: o assistente
+
+1. Esconda a caixa vanilla do membro (selecione **Braço Esquerdo**, por exemplo, e desmarque **Visível**) e crie as duas peças dentro dele: a de cima e a que dobra, com o pivô (**Posição**) na junta. As medidas estão mais abaixo.
+2. Selecione a peça que dobra e abra **Editar → Ferramentas → Dobras do CPM+**.
+3. Confira a parte do corpo (o assistente já escolhe pela peça) e clique em **Marcar peça**.
+
+O assistente cria uma animação escondida com o nome certo (`bend_left_arm`, por exemplo) e coloca a peça nela com uma dobra de prévia, para você testar no controle de teste da animação. No jogo essa animação nunca toca: ela só aponta as peças.
+
+Marque só a peça principal: mão, manga e detalhes que forem filhos dela acompanham a dobra sozinhos.
+
+### Escrevendo o nome à mão
+
+Qualquer animação personalizada serve (a mais simples é uma camada liga e desliga com **Hidden in Gestures Gui** marcado). Dê um destes nomes e mexa na peça dentro dela, por exemplo girando o antebraço:
+
+| Parte do corpo | Nome | Peça que gira | Pivô (Posição) |
+| --- | --- | --- | --- |
+| Braço esquerdo | `bend_left_arm` ou `dobra_braco_esquerdo` | antebraço | 0, 4, 0 (cotovelo) |
+| Braço direito | `bend_right_arm` ou `dobra_braco_direito` | antebraço | 0, 4, 0 (cotovelo) |
+| Perna esquerda | `bend_left_leg` ou `dobra_perna_esquerda` | canela | 0, 6, 0 (joelho) |
+| Perna direita | `bend_right_leg` ou `dobra_perna_direita` | canela | 0, 6, 0 (joelho) |
+| Tronco | `bend_body` ou `dobra_corpo` | peito, a metade de cima | 0, 6, 0 (cintura) |
+
+Maiúsculas, espaços e acentos não importam. Um número no fim gira só uma parte do ângulo: `bend_left_arm_50` gira a metade, bom para um cubo de junta no cotovelo (irmão do antebraço, dentro de **Braço Esquerdo**).
+
+Quando o tronco dobra, a cabeça e os braços acompanham o peito sozinhos. Deixe-os nas partes vanilla deles, nunca dentro do peito.
+
+### Medidas prontas
+
+São as caixas da skin padrão cortadas ao meio, em pixels, a partir da parte vanilla onde a peça fica.
+
+| Parte | Peça | Posição | Deslocamento | Tamanho |
+| --- | --- | --- | --- | --- |
+| Braço esquerdo | de cima | 0, 0, 0 | -1, -2, -2 | 4, 6, 4 |
+| Braço esquerdo | antebraço (gira) | 0, 4, 0 | -1, 0, -2 | 4, 6, 4 |
+| Braço direito | de cima | 0, 0, 0 | -3, -2, -2 | 4, 6, 4 |
+| Braço direito | antebraço (gira) | 0, 4, 0 | -3, 0, -2 | 4, 6, 4 |
+| Perna (qualquer lado) | coxa | 0, 0, 0 | -2, 0, -2 | 4, 6, 4 |
+| Perna (qualquer lado) | canela (gira) | 0, 6, 0 | -2, 0, -2 | 4, 6, 4 |
+| Tronco | barriga | 0, 0, 0 | -4, 6, -2 | 8, 6, 4 |
+| Tronco | peito (gira) | 0, 6, 0 | -4, -6, -2 | 8, 6, 4 |
+
+No braço fino (modelo Alex), o tamanho dos braços é 3, 6, 4, e o deslocamento do braço direito começa em -2 no lugar de -3. No peito, o pivô fica na cintura e a caixa sobe a partir dele, por isso o Deslocamento Y é -6.
+
+Ao cortar uma caixa em duas, ajuste o UV de cada pedaço; o UV por face do CPM ajuda a manter a pintura original. Para manga e calça, use **Ferramentas → Make 2nd Layer** nos pedaços novos.
+
+### Limites
+
+- No Emotecraft 3 (Minecraft 1.21.7 em diante) a dobra é sempre para frente e para trás; a dobra para o lado só existe no Emotecraft 2.
+- O item na mão segue o braço inteiro. Para ele acompanhar a dobra, coloque o ponto de segurar item da mão dentro do antebraço.
+- A armadura, a mão em primeira pessoa e a cabeça de jogador como item não dobram.
 
 ## Testes
 
