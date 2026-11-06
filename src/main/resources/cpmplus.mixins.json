@@ -5,7 +5,12 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "PlayerMixin",
-    "ModelDefinitionMixin"
+    "ModelDefinitionMixin",
+    "ModelPartAnimationMixin",
+    "ModelPartAnimationNewMixin",
+    "SerializedTriggerMixin",
+    "RedirectHolderMixin",
+    "pal.AnimationStackMixin"
   ],
   "injectors": {
     "defaultRequire": 0

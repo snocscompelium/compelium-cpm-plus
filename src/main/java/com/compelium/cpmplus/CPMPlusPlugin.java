@@ -1,5 +1,6 @@
 package com.compelium.cpmplus;
 
+import com.compelium.cpmplus.gui.BendWizardPopup;
 import com.compelium.cpmplus.gui.EmitterWizardPopup;
 import com.compelium.cpmplus.gui.TriggerWizardPopup;
 import com.tom.cpm.api.CPMPlugin;
@@ -20,6 +21,7 @@ public class CPMPlusPlugin implements ICPMPlugin {
 	public void initClient(IClientAPI api) {
 		api.registerEditorGenerator("cpmplus.button.wizard", "cpmplus.tooltip.wizard", eg -> eg.openPopup(new TriggerWizardPopup(eg)));
 		api.registerEditorGenerator("cpmplus.button.emitter", "cpmplus.tooltip.emitter", eg -> eg.openPopup(new EmitterWizardPopup(eg)));
+		api.registerEditorGenerator("cpmplus.button.bend", "cpmplus.tooltip.bend", eg -> eg.openPopup(new BendWizardPopup(eg)));
 		Log.info("[Compelium's CPM+] Loaded");
 	}
 

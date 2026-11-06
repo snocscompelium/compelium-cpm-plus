@@ -20,7 +20,6 @@ import com.tom.cpl.math.Box;
 import com.tom.cpl.math.Vec3f;
 import com.tom.cpl.util.ItemSlot;
 import com.tom.cpm.shared.animation.AnimationType;
-import com.tom.cpm.shared.animation.interpolator.InterpolatorType;
 import com.tom.cpm.shared.editor.Editor;
 import com.tom.cpm.shared.editor.actions.ActionBuilder;
 import com.tom.cpm.shared.editor.anim.AnimFrame;
@@ -256,13 +255,20 @@ public class EmitterWizardPopup extends PopupPanel {
 			ab.execute();
 		}
 
-		editor.addNewAnim(new AnimationProperties(null, st.toName(), AnimationType.LAYER, true, false, InterpolatorType.LINEAR_SINGLE, true, false, false, false));
+		editor.addNewAnim(new AnimationProperties(null, st.toName(), AnimationType.LAYER, true, false, WizardUtil.DEFAULT, true, false, false, false));
 		EditorAnim anim = editor.selectedAnim;
 		if (anim != null) {
-			anim.addFrame(false);
+			// CPM starts a new animation with one empty frame; use it
 			AnimFrame frame = anim.getSelectedFrame();
+			if (frame == null) {
+				anim.addFrame(false);
+				frame = anim.getSelectedFrame();
+			}
 			// A tiny offset that is never played: it only links the marker to this emitter
-			if (frame != null) frame.setPos(marker, new Vec3f(0, 0.02f, 0));
+			if (frame != null) {
+				frame.setPos(marker, new Vec3f(0, 0.02f, 0));
+				anim.clearCache();
+			}
 		}
 		editor.selectedAnim = null;
 		editor.selectedElement = marker;

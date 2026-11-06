@@ -41,6 +41,12 @@ jobs:
             javap -v "$c" | grep -E "= Utf8 " | grep -E "class_|method_|field_|render|Lnet/minecraft|Lcom/mojang" | sed 's/.*= Utf8 //' | sort -u
           done
           cat cpmplus.mixins.json cpmplus.mc.mixins.json fabric.mod.json
+          echo "--- Os moldes de outros mods (stubs) não podem ir para o arquivo ---"
+          if unzip -l "$GITHUB_WORKSPACE/$JAR" | grep -q "com/zigythebird"; then
+            echo "Erro: o arquivo do mod levou classes da Player Animation Library"
+            exit 1
+          fi
+          echo "ok"
 
       - name: Guardar o arquivo do mod
         uses: actions/upload-artifact@v7

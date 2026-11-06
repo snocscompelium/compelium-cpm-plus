@@ -173,7 +173,7 @@ public class TriggerWizardPopup extends PopupPanel {
 		boolean toggle = toggleBox.isSelected();
 		AnimationType type = toggle ? AnimationType.LAYER : AnimationType.VALUE_LAYER;
 		close();
-		editor.addNewAnim(new AnimationProperties(null, currentName(), type, true, false, InterpolatorType.LINEAR_SINGLE, true, false, false, false));
+		editor.addNewAnim(new AnimationProperties(null, currentName(), type, true, false, WizardUtil.DEFAULT, true, false, false, false));
 		eg.openPopup(new AnimationSettingsPopup(gui, editor, true));
 	}
 

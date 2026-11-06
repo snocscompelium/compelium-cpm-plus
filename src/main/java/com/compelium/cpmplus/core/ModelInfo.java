@@ -84,7 +84,7 @@ public final class ModelInfo {
 				if (em != null) {
 					int found = 0;
 					for (IAnimation anim : CpmAccess.animationsFor(reg, btn)) {
-						for (IModelComponent c : CpmAccess.components(anim)) {
+						for (IModelComponent c : CpmAccess.components(anim, def)) {
 							if (c instanceof RenderedCube && ((RenderedCube) c).itemRenderer != null) {
 								addEmitter(emitters, ((RenderedCube) c).itemRenderer, em);
 								found++;

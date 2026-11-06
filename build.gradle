@@ -19,6 +19,16 @@ repositories {
     }
 }
 
+sourceSets {
+    // Stand-ins for classes of other mods that are only there at run time
+    // (Player Animation Library). Used to compile, never packed into the jar.
+    stubs {
+        java {
+            srcDir 'src/stubs/java'
+        }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
@@ -26,6 +36,7 @@ dependencies {
 
     // The CPM API jar holds CPM's shared code, which is the same on every Minecraft version.
     compileOnly "com.tom5454.cpm:CustomPlayerModels-API:${project.cpm_api_version}"
+    compileOnly sourceSets.stubs.output
 }
 
 processResources {

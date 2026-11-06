@@ -15,22 +15,19 @@ final class WizardUtil {
 	}
 
 	/**
-	 * CPM's value layers spread the frames evenly only with the "single" linear and
-	 * trigonometric interpolations (and with no interpolation). The others place the last
-	 * frame before the end, so 50% lands between frames instead of on the middle one.
+	 * The interpolation this mod uses for movement animations: Trigonometric Single.
+	 *
+	 * CPM's "single" interpolations (and Snap) spread the frames evenly, so with three frames
+	 * 50% lands exactly on the middle one. The looping ones wrap around to the first frame and
+	 * Polynomial Single bends the curve, so 50% lands between frames. Trigonometric also eases
+	 * in and out of every frame, so small movements around the rest pose barely move the part.
+	 * Snap is kept because it is already aligned and someone may want the stepped look.
 	 */
+	static final InterpolatorType DEFAULT = InterpolatorType.TRIG_SINGLE;
+
 	static InterpolatorType aligned(InterpolatorType t) {
-		if (t == null) return InterpolatorType.LINEAR_SINGLE;
-		switch (t) {
-		case LINEAR_SINGLE:
-		case TRIG_SINGLE:
-		case NO_INTERPOLATE:
-			return t;
-		case TRIG_LOOP:
-			return InterpolatorType.TRIG_SINGLE;
-		default:
-			return InterpolatorType.LINEAR_SINGLE;
-		}
+		if (t == InterpolatorType.TRIG_SINGLE || t == InterpolatorType.NO_INTERPOLATE) return t;
+		return DEFAULT;
 	}
 
 	/** The part of an animation name before '#'. */
