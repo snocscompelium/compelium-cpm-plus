@@ -2,9 +2,15 @@
   "required": false,
   "minVersion": "0.8",
   "package": "com.compelium.cpmplus.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_21",
   "client": [
-    "PlayerMixin"
+    "PlayerMixin",
+    "ModelDefinitionMixin",
+    "ModelPartAnimationMixin",
+    "ModelPartAnimationNewMixin",
+    "SerializedTriggerMixin",
+    "RedirectHolderMixin",
+    "pal.AnimationStackMixin"
   ],
   "injectors": {
     "defaultRequire": 0

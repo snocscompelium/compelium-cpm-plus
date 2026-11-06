@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 }
 
 version = project.mod_version
@@ -7,16 +7,6 @@ group = project.maven_group
 
 base {
     archivesName = project.archives_name
-}
-
-// Compile-only stand-ins for the Mixin annotations. Fabric Loader ships the real ones,
-// so these are never packaged into the mod.
-sourceSets {
-    stubs {
-        java {
-            srcDir 'stubs'
-        }
-    }
 }
 
 repositories {
@@ -29,33 +19,48 @@ repositories {
     }
 }
 
-dependencies {
-    // The CPM API jar holds CPM's shared code, which is the same on every Minecraft version.
-    // -PcpmApiJar=/path/to/CustomPlayerModels-API.jar builds against a local copy instead.
-    if (project.hasProperty('cpmApiJar')) {
-        compileOnly files(project.property('cpmApiJar'))
-    } else {
-        compileOnly "com.tom5454.cpm:CustomPlayerModels-API:${project.cpm_api_version}"
+sourceSets {
+    // Stand-ins for classes of other mods that are only there at run time
+    // (Player Animation Library). Used to compile, never packed into the jar.
+    stubs {
+        java {
+            srcDir 'src/stubs/java'
+        }
     }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // The CPM API jar holds CPM's shared code, which is the same on every Minecraft version.
+    compileOnly "com.tom5454.cpm:CustomPlayerModels-API:${project.cpm_api_version}"
     compileOnly sourceSets.stubs.output
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    // Java 8 bytecode, like the official CPM add-ons, so one file runs on every supported Minecraft version
-    options.release = 8
-    options.compilerArgs << '-Xlint:-options'
-}
-
 processResources {
-    inputs.property 'version', project.version
+    def version = project.version
+    inputs.property 'version', version
     filesMatching('fabric.mod.json') {
-        expand 'version': project.version
+        expand 'version': version
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+    it.options.release = 21
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 jar {
+    def projectName = project.name
+    inputs.property 'projectName', projectName
     from('LICENSE') {
-        rename { "${it}_${project.archives_name}" }
+        rename { "${it}_${projectName}" }
     }
 }

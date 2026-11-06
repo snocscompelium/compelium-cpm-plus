@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import com.compelium.cpmplus.core.ModelInfo;
+import com.compelium.cpmplus.effects.RenderCapture;
 import com.tom.cpm.shared.MinecraftClientAccess;
 import com.tom.cpm.shared.animation.AnimationEngine;
 import com.tom.cpm.shared.animation.AnimationState;
@@ -33,9 +35,11 @@ public final class PhysicsEngine {
 		if (errors >= MAX_ERRORS || profile == null || state == null) return;
 		try {
 			ModelDefinition def = profile.getModelDefinition();
-			if (def == null) return;
-			List<LayerBinding> bindings = ModelBindings.of(def);
-			if (bindings.isEmpty()) return;
+			ModelInfo info = def == null ? ModelInfo.EMPTY : ModelInfo.of(def);
+			if (!info.needsMotion()) {
+				RenderCapture.preparedPlayer(profile, null);
+				return;
+			}
 
 			AnimationEngine engine = MinecraftClientAccess.get().getPlayerRenderManager().getAnimationEngine();
 			PlayerMotion motion = MOTION.get(profile);
@@ -43,7 +47,10 @@ public final class PhysicsEngine {
 				motion = new PlayerMotion();
 				MOTION.put(profile, motion);
 			}
+			List<LayerBinding> bindings = info.physics;
 			motion.update(state, engine.getTicks(), engine.getTime(), bindings);
+			RenderCapture.preparedPlayer(profile, motion);
+			if (bindings.isEmpty()) return;
 
 			byte[] data = prepareData(state, def, bindings);
 			byte[] prev = state.prevGestureData != null && state.prevGestureData.length == data.length ? state.prevGestureData : null;
