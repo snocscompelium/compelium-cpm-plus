@@ -1,11 +1,11 @@
 # Roteiro de testes
 
-Versão de teste: 0.2.0 (partículas, dobras do Emotecraft e interpolação trigonométrica).
+Versão de teste: 0.2.1 (partículas, dobras do Emotecraft, interpolação trigonométrica e a correção das partículas com shaders).
 
 ## Antes de começar
 
 - Minecraft 1.21.4 com Fabric, Fabric API e CPM para Fabric 1.21.4.
-- `compelium-cpm-plus-0.2.0.jar` na pasta `mods`, no lugar da versão anterior.
+- `compelium-cpm-plus-0.2.1.jar` na pasta `mods`, no lugar da versão anterior.
 - Para as dobras: o Emotecraft. Tire o `cpm-emote-bends` da pasta `mods`, se ele estiver lá.
 - Para os testes com dois jogadores: um amigo ou uma segunda conta.
 
@@ -37,6 +37,7 @@ Versão de teste: 0.2.0 (partículas, dobras do Emotecraft e interpolação trig
 - [ ] Mexendo o braço (andando, batendo), o fogo acompanha a mão.
 - [ ] Correndo, o fogo deixa um rastro contínuo, sem buracos.
 - [ ] No inventário (a prévia do personagem), não sai fogo na tela.
+- [ ] Com shaders ligados (Iris, com sombras de entidades), girando a câmera em terceira pessoa, as partículas só saem do ponto do modelo, sem pontos extras.
 - [ ] No arquivo de log aparece `Found ... particle marker(s) in a model`.
 
 ## 4. Ajustes das partículas
