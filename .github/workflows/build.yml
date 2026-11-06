@@ -30,6 +30,18 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build --no-daemon --stacktrace
 
+      - name: Conferir o arquivo do mod
+        run: |
+          JAR=$(ls build/libs/compelium-cpm-plus-*.jar | grep -v sources | head -1)
+          unzip -l "$JAR"
+          mkdir -p /tmp/jar && cd /tmp/jar && unzip -q -o "$GITHUB_WORKSPACE/$JAR"
+          echo "--- Nomes que os hooks do Minecraft procuram (devem estar traduzidos para intermediary) ---"
+          for c in com/compelium/cpmplus/mc/mixin/*.class; do
+            echo "== $c"
+            javap -v "$c" | grep -E "= Utf8 " | grep -E "class_|method_|field_|render|Lnet/minecraft|Lcom/mojang" | sed 's/.*= Utf8 //' | sort -u
+          done
+          cat cpmplus.mixins.json cpmplus.mc.mixins.json fabric.mod.json
+
       - name: Guardar o arquivo do mod
         uses: actions/upload-artifact@v7
         with:

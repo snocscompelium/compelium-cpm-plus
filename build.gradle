@@ -19,12 +19,6 @@ repositories {
     }
 }
 
-loom {
-    mixin {
-        defaultRefmapName = 'compelium-cpm-plus-refmap.json'
-    }
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
