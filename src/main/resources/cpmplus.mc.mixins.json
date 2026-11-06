@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.compelium.cpmplus.mc.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "compelium-cpm-plus-refmap.json",
+  "client": [
+    "LevelRendererMixin",
+    "LivingEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

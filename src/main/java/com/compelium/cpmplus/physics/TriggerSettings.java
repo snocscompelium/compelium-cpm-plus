@@ -63,9 +63,11 @@ public final class TriggerSettings {
 		if (name == null) return null;
 		String n = normalize(name);
 		if (!n.startsWith(TriggerType.PREFIX)) return null;
-		String[] tokens = n.split("[\\s,;]+");
+		String[] tokens = n.split("[\\s;]+|,(?=[a-z])");
 		if (tokens.length == 0) return null;
-		TriggerType type = TriggerType.byId(tokens[0].substring(TriggerType.PREFIX.length()));
+		String first = tokens[0];
+		while (first.endsWith(",")) first = first.substring(0, first.length() - 1);
+		TriggerType type = TriggerType.byId(first.substring(TriggerType.PREFIX.length()));
 		if (type == null) return null;
 
 		float peso = DEFAULT_PESO, mola = DEFAULT_MOLA, forca = DEFAULT_FORCA, limite = DEFAULT_LIMITE, limiar = DEFAULT_LIMIAR;
@@ -76,7 +78,9 @@ public final class TriggerSettings {
 			String key = t.substring(0, eq);
 			float value;
 			try {
-				value = Float.parseFloat(t.substring(eq + 1).replace(',', '.'));
+				String raw = t.substring(eq + 1);
+				while (raw.endsWith(",")) raw = raw.substring(0, raw.length() - 1);
+				value = Float.parseFloat(raw.replace(',', '.'));
 			} catch (NumberFormatException e) {
 				continue;
 			}
@@ -116,12 +120,12 @@ public final class TriggerSettings {
 		else sb.append(String.format(Locale.ROOT, "%.1f", value));
 	}
 
-	static String normalize(String s) {
+	public static String normalize(String s) {
 		String n = Normalizer.normalize(s.trim(), Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
 		return n.toLowerCase(Locale.ROOT);
 	}
 
-	static float clamp(float v, float min, float max) {
+	public static float clamp(float v, float min, float max) {
 		return v < min ? min : (v > max ? max : v);
 	}
 }

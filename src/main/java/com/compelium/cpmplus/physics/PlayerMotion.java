@@ -13,7 +13,7 @@ import com.tom.cpm.shared.animation.AnimationState;
  * it draws (position change per tick, body rotation, swimming), so it works the same
  * for you and for everyone around you, without any help from the server.
  */
-final class PlayerMotion {
+public final class PlayerMotion {
 	/** Reference speeds, in blocks per tick, that reach the end of the animation at forca=5. */
 	static final float REF_FALL = 0.8f;
 	static final float REF_RISE = 0.42f;
@@ -93,6 +93,32 @@ final class PlayerMotion {
 			}
 			sp.step(target, st.omega, st.zeta, dt);
 		}
+	}
+
+	/**
+	 * How strong a movement is right now, from 0 to 1, with the default settings.
+	 * Two-way triggers report how far they are from rest, in either direction.
+	 * Landing and jumping are one-off events and always report 0 here: use the event counters.
+	 */
+	public float gate(TriggerType type) {
+		if (type == TriggerType.POUSO || type == TriggerType.PULO) return 0f;
+		float t = target(TriggerSettings.defaults(type));
+		return type.twoWay ? Math.min(1f, Math.abs(t - 0.5f) * 2f) : t;
+	}
+
+	/** Goes up by one every time a landing is detected. */
+	public int impactEvent() {
+		return impactEvent;
+	}
+
+	/** Strength of the last landing, 0 to 1. */
+	public float impactStrength() {
+		return impactStrength;
+	}
+
+	/** Goes up by one every time a jump is detected. */
+	public int jumpEvent() {
+		return jumpEvent;
 	}
 
 	/** Current animation position for a layer, 0 to 1. */

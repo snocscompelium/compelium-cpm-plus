@@ -24,11 +24,11 @@ import com.tom.cpm.shared.editor.gui.EditorGui;
 import com.tom.cpm.shared.editor.gui.popup.AnimationSettingsPopup;
 
 /**
- * Edit &gt; Tools &gt; "Gatilhos do CPM+": picks a trigger and its settings and writes
+ * Edit &gt; Tools &gt; "Gatilhos do CPM+": picks a movement trigger and its settings and writes
  * the matching animation name, so nobody has to type it by hand.
  */
 public class TriggerWizardPopup extends PopupPanel {
-	private static final int WIDTH = 260;
+	private static final int WIDTH = 270;
 
 	private final EditorGui eg;
 	private final DropDownBox<Option> triggerBox;
@@ -101,6 +101,11 @@ public class TriggerWizardPopup extends PopupPanel {
 		FlowLayout buttonLayout = new FlowLayout(buttons, 5, 0);
 		buttonLayout.setSize(WIDTH);
 
+		Button fix = new Button(gui, gui.i18nFormat("cpmplus.wizard.fix"), this::fixAll);
+		fix.setTooltip(new Tooltip(eg, gui.i18nFormat("cpmplus.tooltip.fix")));
+		fix.setBounds(new Box(5, 0, WIDTH - 10, 20));
+		addElement(fix);
+
 		triggerBox.setAction(this::refresh);
 		loadFromSelected(editor, options);
 		refresh();
@@ -134,10 +139,7 @@ public class TriggerWizardPopup extends PopupPanel {
 	private void loadFromSelected(Editor editor, List<Option> options) {
 		EditorAnim anim = editor.selectedAnim;
 		if (anim == null || anim.displayName == null) return;
-		String name = anim.displayName;
-		int hash = name.indexOf('#');
-		if (hash >= 0) name = name.substring(0, hash);
-		TriggerSettings st = TriggerSettings.parse(name);
+		TriggerSettings st = TriggerSettings.parse(WizardUtil.baseName(anim.displayName));
 		if (st == null) return;
 		for (Option o : options) {
 			if (o.type == st.type) triggerBox.setSelected(o);
@@ -171,7 +173,7 @@ public class TriggerWizardPopup extends PopupPanel {
 		boolean toggle = toggleBox.isSelected();
 		AnimationType type = toggle ? AnimationType.LAYER : AnimationType.VALUE_LAYER;
 		close();
-		editor.addNewAnim(new AnimationProperties(null, currentName(), type, true, false, InterpolatorType.POLY_SINGLE, true, false, false, false));
+		editor.addNewAnim(new AnimationProperties(null, currentName(), type, true, false, InterpolatorType.LINEAR_SINGLE, true, false, false, false));
 		eg.openPopup(new AnimationSettingsPopup(gui, editor, true));
 	}
 
@@ -180,13 +182,20 @@ public class TriggerWizardPopup extends PopupPanel {
 		EditorAnim anim = editor.selectedAnim;
 		close();
 		if (anim == null) return;
-		String old = anim.displayName == null ? "" : anim.displayName;
-		int hash = old.indexOf('#');
-		String name = currentName() + (hash >= 0 ? old.substring(hash) : "");
+		String name = currentName() + WizardUtil.suffix(anim.displayName);
+		InterpolatorType fixed = WizardUtil.aligned(anim.intType);
 		editor.action("edit", "action.cpm.anim").
 		updateValueOp(anim, anim.displayName, name, (a, b) -> a.displayName = b).
+		updateValueOp(anim, anim.intType, fixed, (a, b) -> a.intType = b).
+		onAction(anim, EditorAnim::clearCache).
 		execute();
 		editor.updateGui();
+	}
+
+	private void fixAll() {
+		int changed = WizardUtil.fixAlignment(eg.getEditor());
+		close();
+		gui.displayMessagePopup(gui.i18nFormat("cpmplus.button.wizard"), gui.i18nFormat(changed == 0 ? "cpmplus.message.fix.none" : "cpmplus.message.fix.done", changed));
 	}
 
 	@Override

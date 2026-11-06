@@ -3,7 +3,7 @@
   "id": "cpmplus",
   "version": "${version}",
   "name": "Compelium's CPM+",
-  "description": "Expande o Customizable Player Models com gatilhos de física: capas, cabelos, rabos e acessórios que reagem a quedas, corridas, giros, pulos e pousos. Opcional e só no cliente: quem não tem o mod vê o modelo normal.",
+  "description": "Expande o Customizable Player Models: partes do modelo que reagem ao movimento (capas, cabelos, rabos) e emissores de partículas presos ao modelo. Opcional e só no cliente: quem não tem o mod vê o modelo normal.",
   "authors": [
     "Compelium"
   ],
@@ -20,12 +20,13 @@
     ]
   },
   "mixins": [
-    "cpmplus.mixins.json"
+    "cpmplus.mixins.json",
+    "cpmplus.mc.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "minecraft": ">=1.21.4",
-    "java": ">=8",
+    "java": ">=21",
     "cpm": "*"
   }
 }
